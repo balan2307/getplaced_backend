@@ -23,7 +23,8 @@ router.route('/profile/:id')
 router.route('/users')
 .get(UserController.getAllUsers)
 
-
+router.route('/validate')
+.get(UserController.checkUnique)
 router.route('/deleteImage/:id')
 .post(UserController.deleteProfileImage)
 

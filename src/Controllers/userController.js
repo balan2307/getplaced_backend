@@ -197,3 +197,31 @@ module.exports.deleteProfileImage=async(req,res)=>{
 
 };
 
+module.exports.checkUnique=async(req,res)=>{
+ const {email,username}=req.query;
+ console.log("email",email,username)
+ if(email)
+ {
+    try{
+    const user=await User.findOne({email})
+    console.log("Email ",user,email)
+   }
+   catch(err)
+   {
+    console.log("Error",err)
+
+   }
+   
+
+ }
+ else if(username)
+ {
+ 
+     const user=await User.findOne({username})
+     console.log("Username ",user)
+     
+  
+ }
+
+}
+

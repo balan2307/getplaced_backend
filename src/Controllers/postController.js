@@ -13,7 +13,7 @@ module.exports.createPost=async(req,res)=>{
     let date=new Date().toLocaleString();
     let time=Date.now();
 
-    post.tags=post.tags.replace(/\s+/g, ' ').trim().split(" ");
+    if(post.tags!=undefined) post.tags=post.tags.replace(/\s+/g, ' ').trim().split(" ");
     post.postdate=date;
     post.time=time;
     post.user=id;
