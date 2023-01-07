@@ -18,7 +18,7 @@ router.route('/username/:id')
 
 router.route('/profile/:id')
 .get(UserController.getUserProfile)
-.post(upload.single('image'),UserController.updateProfile)
+.patch(upload.single('image'),UserController.updateProfile)
 
 router.route('/users')
 .get(UserController.getAllUsers)
@@ -26,7 +26,7 @@ router.route('/users')
 router.route('/validate')
 .get(UserController.checkUnique)
 router.route('/deleteImage/:id')
-.post(UserController.deleteProfileImage)
+.delete(UserController.deleteProfileImage)
 
 module.exports=router;
 

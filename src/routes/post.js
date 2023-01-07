@@ -11,7 +11,7 @@ router.route('/user/post')
 
 router.route('/user/post/:id')
 .get(PostController.getPost)
-.post(upload.single('image'),PostController.editPost)
+.patch(upload.single('image'),PostController.editPost)
 .delete(PostController.deletePost)
 
 
