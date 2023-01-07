@@ -6,12 +6,12 @@ const {storage}=require('../cloudinary/index')
 const multer  = require('multer')
 const upload = multer({ storage })
 
-router.route('/login')
-.post(UserController.loginUser);
+// router.route('/login')
+// .post(UserController.loginUser);
 
 
-router.route('/register')
-.post(UserController.RegisterUser);
+// router.route('/register')
+// .post(UserController.RegisterUser);
 
 router.route('/username/:id')
 .get(UserController.getUserName);
