@@ -221,7 +221,7 @@ module.exports.deletePost=async(req,res)=>{
 }
 
 module.exports.getAllPosts=async(req,res)=>{
-    // console.log("inside getallposts")
+    console.log("inside getallposts")
     const posts=await Post.find({}).populate('user',{'username':1});
     // console.log("All posts backend",posts)
     return res.status(200).json({
@@ -294,12 +294,17 @@ module.exports.downvotePost=async(req,res)=>{
 
 module.exports.getUserPosts=async(req,res)=>{
     const {id}=req.params;
-    console.log("backend userposts")
+    console.log("backend userposts post")
     const {page,limit}=req.query;
     let skip=(page-1)*limit;
     const count=await Post.find({user:id}).count();
     const pages=Math.ceil(count/limit);
     const posts=await Post.find({user:id}).populate('user').skip(skip).limit(limit);
+    if(posts)
+    {
+
+        console.log("user posts checking",posts)
+    }
     return res.status(200).json({
         title:"Success",
         posts,
@@ -321,7 +326,7 @@ module.exports.getPostPages=async(req,res)=>{
     const count=await Post.findByTag(tag).count();
     const posts=await Post.findByTag(tag).populate('user').skip(skip).limit(limit);
     const pages=Math.ceil(count/limit);
-    console.log("backend posts",posts)
+    // console.log("backend posts",posts)
     return res.status(200).json({
         title:"Success",
         pages,

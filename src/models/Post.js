@@ -49,6 +49,9 @@ const postSchema=new Schema({
         type:Schema.Types.ObjectId,
         ref:'User'
     }],
+    votes: {
+        type: Number
+      },
     user:{
         type:Schema.Types.ObjectId,
         ref:'User'
@@ -65,6 +68,16 @@ const postSchema=new Schema({
 })
 
 
+postSchema.pre('findOneAndUpdate', function(next) {
+    console.log("save called")
+
+    // this.update({}, { $set: { title: 'demo' } });
+    const upvotes=this.upvotes!=undefined  ? this.upvotes.length : 0
+    const downvotes=this.downvotes!=undefined  ? this.downvotes.length : 0
+    this.votes = upvotes-downvotes;
+    console.log("Votes",this.title,this.get('title'),this.get('upvotes'),this.get('downvotes'))
+    next();
+  });
 
 postSchema.statics.findByTag=function(tag){
 

@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
-  console.log("middlleware called")
+  console.log("middlleware called",req.url)
+
 
   const token = req.headers.authorization.split(' ')[1];
   // console.log("Backend token",token)

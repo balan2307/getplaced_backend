@@ -19,6 +19,17 @@ const PORT=process.env.SERVER_PORT || 3000;
 const InitRoutes=require('./routes/index');
 InitRoutes(app);
 
+app.use((req, res, next) => {
+    console.log("req received from client");
+    next(); // this will invoke next middleware function
+})
+
+// app.all('*', function(req, res){
+
+//     console.log("request received in backend",req.url);
+    
+// });
+
 app.listen(PORT ,()=>{
     console.log(`server started on PORT ${PORT}`)
 })

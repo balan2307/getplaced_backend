@@ -80,12 +80,12 @@ module.exports.RegisterUser = async (req, res) => {
       if ("email" in duplicate) {
         return res.status(400).json({
           title: "error",
-          error: "email in use",
+          error: "An account with this email already exists ,try login",
         });
       } else if ("username" in duplicate) {
         return res.status(400).json({
           title: "error",
-          error: "username in use",
+          error: "username already in use,try a different one",
         });
       }
     }
@@ -127,12 +127,6 @@ module.exports.updateProfile = async (req, res) => {
 
   console.log("backend prof", req.body);
 
-  //  function isEmpty(obj) {
-  //   console.log("OBJ ",obj,Object.keys(obj).length)
-
-  //   return Object.keys(obj).length === 0;
-  // }
-
   const {
     name,
     username,
@@ -152,10 +146,8 @@ module.exports.updateProfile = async (req, res) => {
     path = req.file.path;
     profileImage = { url: path, filename };
 
-      if (
-        getUser.profileImage != undefined &&
-        getUser.profileImage.filename != undefined
-      ) {
+      if ( getUser.profileImage != undefined && getUser.profileImage.filename != undefined) 
+      {
         console.log("Entered if");
         try{ await cloudinary.uploader.destroy(getUser.profileImage.filename);}
         catch(err)
@@ -165,12 +157,12 @@ module.exports.updateProfile = async (req, res) => {
             message:"Server error"
           });
 
-        }
-       
-      }
+        }  }
 
       try
-      {   await User.findByIdAndUpdate(
+      {  
+        console.log("INside try")
+         await User.findByIdAndUpdate(
         id,
         { name, username, college, university, yearofgrad, profileImage, bio },
         { new: true }
@@ -184,6 +176,10 @@ module.exports.updateProfile = async (req, res) => {
       });
 
     }
+    finally{
+
+      console.log("Profile updated")
+    }
    
       
    
@@ -191,11 +187,20 @@ module.exports.updateProfile = async (req, res) => {
     console.log("Image not uploaded");
     // await cloudinary.uploader.destroy(getUser.profileImage.filename);
     try{
-      await User.findByIdAndUpdate(
+      console.log("entered try block of image not uploaded")
+     const user=await User.findByIdAndUpdate(
         id,
         { name, username, college, university, yearofgrad, bio },
         { new: true }
+
       );
+
+
+      if(user) return res.status(200).json({
+        title: "update success",
+
+        updateduser:user
+      });
       
     }
     catch(err)
@@ -208,13 +213,20 @@ module.exports.updateProfile = async (req, res) => {
       
     }
 
+    finally{
+
+      console.log("profile updated finally")
+    }
+
   }
 };
 
 module.exports.getUserProfile = async (req, res) => {
+  
+  console.log("inside profilebackend")
   const { id } = req.params;
   const profile = await User.findOne({ _id: id });
-  // console.log("Profile backend",profile)
+  console.log("Profile backend",profile)
   return res.status(200).json({
     title: "Success",
     profile,
