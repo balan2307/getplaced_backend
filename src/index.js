@@ -20,7 +20,7 @@ const InitRoutes=require('./routes/index');
 InitRoutes(app);
 
 app.use((req, res, next) => {
-    console.log("req received from client");
+    console.log("request received from client");
     next(); // this will invoke next middleware function
 })
 

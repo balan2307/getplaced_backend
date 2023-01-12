@@ -162,11 +162,22 @@ module.exports.updateProfile = async (req, res) => {
       try
       {  
         console.log("INside try")
-         await User.findByIdAndUpdate(
+       const user=  await User.findByIdAndUpdate(
         id,
         { name, username, college, university, yearofgrad, profileImage, bio },
         { new: true }
       );
+      console.log("backend after update",user)
+
+         if(user){
+
+          console.log("response returned")
+          return res.status(200).json({
+        title: "update success",
+
+        updatedprofile:user
+      });
+    }
     }
     catch(err)
     {
@@ -194,13 +205,16 @@ module.exports.updateProfile = async (req, res) => {
         { new: true }
 
       );
+      console.log("backend after update",user)
 
 
-      if(user) return res.status(200).json({
+      if(user) {
+        console.log("response returned")
+        return res.status(200).json({
         title: "update success",
-
-        updateduser:user
+        updatedprofile:user
       });
+    }
       
     }
     catch(err)
