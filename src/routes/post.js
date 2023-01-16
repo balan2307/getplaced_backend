@@ -18,8 +18,10 @@ router.route('/user/post/:id')
 router.route('/user/posts')
 .get(PostController.getAllPosts)
 
-router.route('/posts/:tag')
-.get(PostController.getTaggedPostsCount)
+
+
+// router.route('/posts/:tag')
+// .get(PostController.getTaggedPostsCount)
 
 router.route('/posts/pages/:tag')
 .get(PostController.getPostPages)
@@ -35,6 +37,8 @@ router.route('/user/posts/:id')
 .get(PostController.getUserPosts)
 
 
+router.route('/posts/search')
+.get(PostController.searchPost)
 
 module.exports=router;
 

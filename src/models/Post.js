@@ -68,6 +68,9 @@ const postSchema=new Schema({
 })
 
 
+
+postSchema.index({ company: 1, content: 'text' }, { collation: { locale: 'en', strength: 1 } });
+
 postSchema.pre('findOneAndUpdate', function(next) {
     console.log("save called")
 

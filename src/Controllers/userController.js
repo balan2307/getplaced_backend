@@ -278,3 +278,40 @@ module.exports.checkUnique = async (req, res) => {
     console.log("Username ", user);
   }
 };
+
+
+module.exports.verifyToken=async(req,res)=>{
+
+   let {token}=req.params
+
+  //  console.log("backend",token)
+  if (!token) {
+    console.log("token required verify")
+    return res.status(403).json({
+      title: "error",
+ 
+    });
+  }
+  try {
+    const decoded = jwt.verify(token, 'secretkey');
+    req.user = decoded;
+    return res.status(200).json({
+      title: "auth success",
+ 
+    });
+  } catch (err) {
+    console.log("Invalid token")
+    return res.status(403).json({
+      title: "error",
+      error: "token is invalid",
+    });
+  
+  }
+
+
+
+
+
+
+  
+}

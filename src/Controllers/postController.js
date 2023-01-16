@@ -340,3 +340,45 @@ module.exports.getPostPages=async(req,res)=>{
 
     
 }
+
+
+module.exports.searchPost=async(req,res)=>{
+
+    console.log("inside searchpost")
+
+    const {page,limit,search}=req.query;
+    console.log("Search request",search)
+    let skip=(page-1)*limit;
+
+    const count=await Post.countDocuments({ 
+        $or: [
+            { company: { $regex: search, $options: "i" } },
+            { content: { $regex: search, $options: "i" } }
+        ] 
+    }).collation({ locale: 'en', strength: 1 })
+    const pages=Math.ceil(count/limit);
+
+
+
+    const posts=await Post.find({ 
+        $or: [
+            { company: { $regex: search, $options: "i" } },
+            { content: { $regex: search, $options: "i" } }
+        ] 
+    }).collation({ locale: 'en', strength: 1 }).populate('user').skip(skip).limit(limit);;
+
+    console.log("backend psots",posts)
+
+    return res.status(200).json({
+        title:"Success",
+        pages,
+        posts
+      })
+
+
+
+
+    // console.log(("getPostpages backend",tag,req.params,req.query))
+
+    
+}
