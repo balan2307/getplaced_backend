@@ -4,8 +4,9 @@ const verifyToken = (req, res, next) => {
   console.log("middlleware called",req.url)
 
 
-  const token = req.headers.authorization.split(' ')[1];
+  let token =''
   // console.log("Backend token",token)
+  if(req.headers.authorization!=undefined) token = req.headers.authorization.split(' ')[1];
   
 
   if (!token) {
