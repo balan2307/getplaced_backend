@@ -63,7 +63,6 @@ module.exports.RegisterUser = async (req, res) => {
 
   let month = months[parseInt(date.split(" ")[0].split("/")[1]) - 1];
   let year = date.split(" ")[0].split("/")[2].split(",")[0];
-  console.log("month", "year", month, year);
   let joined = month + " " + year;
   const { email, username, password } = req.body;
   const newUser = new User({
@@ -100,7 +99,6 @@ module.exports.RegisterUser = async (req, res) => {
 
 module.exports.getAllUsers = async (req, res) => {
   const users = await User.find({ email: "thevarbalan32@gmail.com" });
-  console.log("testing", users);
   return res.status(200).json({
     title: "Test success",
   });
@@ -125,7 +123,7 @@ module.exports.updateProfile = async (req, res) => {
   let path = "";
   let profileImage = "";
 
-  console.log("backend prof", req.body);
+  // console.log("backend prof", req.body);
 
   const {
     name,
@@ -135,10 +133,12 @@ module.exports.updateProfile = async (req, res) => {
     yearofgraduation: yearofgrad,
     image,
     bio,
+    imagedeletion
   } = req.body;
+
   const getUser = await User.findOne({ _id: id });
   //  console.log("ID profile",id,getUser.profileImage,typeof(getUser.profileImage))
-  console.log("Bio ", bio);
+  // console.log("Bio ", bio);
 
   if (req.file) {
     console.log("Image  uploaded");
@@ -195,17 +195,37 @@ module.exports.updateProfile = async (req, res) => {
       
    
   } else {
-    console.log("Image not uploaded");
-    // await cloudinary.uploader.destroy(getUser.profileImage.filename);
+    console.log("Image not uploaded",imagedeletion,typeof(imagedeletion));
+    if(imagedeletion=="true"){
+      console.log("inside deletion")
+     if(getUser.profileImage.filename) await cloudinary.uploader.destroy(getUser.profileImage.filename);
+    }
     try{
       console.log("entered try block of image not uploaded")
-     const user=await User.findByIdAndUpdate(
+     let user="";
+     if(imagedeletion=="true")
+     {
+      console.log("delete image")
+      let profileImage={};
+     user=await User.findByIdAndUpdate(
         id,
-        { name, username, college, university, yearofgrad, bio },
+        { name, username, college, university, yearofgrad, bio ,profileImage},
         { new: true }
 
       );
-      console.log("backend after update",user)
+     }
+     else
+     {
+      console.log("don;t delete image")
+
+      user=await User.findByIdAndUpdate(
+         id,
+         { name, username, college, university, yearofgrad, bio},
+         { new: true }
+ 
+       );
+
+     }
 
 
       if(user) {
@@ -237,10 +257,10 @@ module.exports.updateProfile = async (req, res) => {
 
 module.exports.getUserProfile = async (req, res) => {
   
-  console.log("inside profilebackend")
+  // console.log("inside profilebackend")
   const { id } = req.params;
   const profile = await User.findOne({ _id: id });
-  console.log("Profile backend",profile)
+  // console.log("Profile backend",profile)
   return res.status(200).json({
     title: "Success",
     profile,
