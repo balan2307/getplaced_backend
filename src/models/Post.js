@@ -72,13 +72,12 @@ const postSchema=new Schema({
 postSchema.index({ company: 1, content: 'text' }, { collation: { locale: 'en', strength: 1 } });
 
 postSchema.pre('findOneAndUpdate', function(next) {
-    console.log("save called")
+   
 
     // this.update({}, { $set: { title: 'demo' } });
     const upvotes=this.upvotes!=undefined  ? this.upvotes.length : 0
     const downvotes=this.downvotes!=undefined  ? this.downvotes.length : 0
     this.votes = upvotes-downvotes;
-    console.log("Votes",this.title,this.get('title'),this.get('upvotes'),this.get('downvotes'))
     next();
   });
 

@@ -6,10 +6,10 @@ const { cloudinary } = require("../cloudinary");
 
 module.exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log("In Login", email, password);
+
 
   User.findOne({ email }, (err, user) => {
-    console.log("User received", user);
+
 
     if (err)
       return res.status(500).json({
@@ -33,7 +33,7 @@ module.exports.loginUser = async (req, res) => {
     let token = jwt.sign({ userId: user._id }, "secretkey", {
       expiresIn: "6d",
     });
-    console.log("login success");
+  
     return res.status(200).json({
       title: "login success",
       token,
@@ -94,7 +94,7 @@ module.exports.RegisterUser = async (req, res) => {
     });
   });
 
-  console.log("Register request received", newUser);
+
 };
 
 module.exports.getAllUsers = async (req, res) => {
@@ -102,19 +102,19 @@ module.exports.getAllUsers = async (req, res) => {
   return res.status(200).json({
     title: "Test success",
   });
-  // return users
+
 };
 
 module.exports.getUserName = async (req, res) => {
-  // console.log("testing username before")
+
   const { id } = req.params;
   const user = await User.findOne({ _id: id });
-  // console.log("testing username",user.username)
+
   return res.status(200).json({
     title: "Success",
     username: user.username,
   });
-  // return users
+
 };
 
 module.exports.updateProfile = async (req, res) => {
@@ -123,7 +123,7 @@ module.exports.updateProfile = async (req, res) => {
   let path = "";
   let profileImage = "";
 
-  // console.log("backend prof", req.body);
+
 
   const {
     name,
@@ -137,18 +137,16 @@ module.exports.updateProfile = async (req, res) => {
   } = req.body;
 
   const getUser = await User.findOne({ _id: id });
-  //  console.log("ID profile",id,getUser.profileImage,typeof(getUser.profileImage))
-  // console.log("Bio ", bio);
 
   if (req.file) {
-    console.log("Image  uploaded");
+ 
     filename = req.file.filename;
     path = req.file.path;
     profileImage = { url: path, filename };
 
       if ( getUser.profileImage != undefined && getUser.profileImage.filename != undefined) 
       {
-        console.log("Entered if");
+
         try{ await cloudinary.uploader.destroy(getUser.profileImage.filename);}
         catch(err)
         {
@@ -161,17 +159,17 @@ module.exports.updateProfile = async (req, res) => {
 
       try
       {  
-        console.log("INside try")
+    
        const user=  await User.findByIdAndUpdate(
         id,
         { name, username, college, university, yearofgrad, profileImage, bio },
         { new: true }
       );
-      console.log("backend after update",user)
+  
 
          if(user){
 
-          console.log("response returned")
+        
           return res.status(200).json({
         title: "update success",
 
@@ -187,25 +185,22 @@ module.exports.updateProfile = async (req, res) => {
       });
 
     }
-    finally{
 
-      console.log("Profile updated")
-    }
    
       
    
   } else {
-    console.log("Image not uploaded",imagedeletion,typeof(imagedeletion));
+  
     if(imagedeletion=="true"){
-      console.log("inside deletion")
+
      if(getUser.profileImage.filename) await cloudinary.uploader.destroy(getUser.profileImage.filename);
     }
     try{
-      console.log("entered try block of image not uploaded")
+   
      let user="";
      if(imagedeletion=="true")
      {
-      console.log("delete image")
+  
       let profileImage={};
      user=await User.findByIdAndUpdate(
         id,
@@ -216,7 +211,7 @@ module.exports.updateProfile = async (req, res) => {
      }
      else
      {
-      console.log("don;t delete image")
+
 
       user=await User.findByIdAndUpdate(
          id,
@@ -229,7 +224,7 @@ module.exports.updateProfile = async (req, res) => {
 
 
       if(user) {
-        console.log("response returned")
+   
         return res.status(200).json({
         title: "update success",
         updatedprofile:user
@@ -247,20 +242,17 @@ module.exports.updateProfile = async (req, res) => {
       
     }
 
-    finally{
 
-      console.log("profile updated finally")
-    }
 
   }
 };
 
 module.exports.getUserProfile = async (req, res) => {
   
-  // console.log("inside profilebackend")
+
   const { id } = req.params;
   const profile = await User.findOne({ _id: id });
-  // console.log("Profile backend",profile)
+
   return res.status(200).json({
     title: "Success",
     profile,
@@ -271,7 +263,7 @@ module.exports.deleteProfileImage = async (req, res) => {
   const { id } = req.params;
   const profile = await User.findOne({ _id: id });
   try {
-    console.log("Deleting prof image", profile.profileImage.filename);
+
     if (
       profile.profileImage != undefined &&
       profile.profileImage.filename != undefined
@@ -285,17 +277,17 @@ module.exports.deleteProfileImage = async (req, res) => {
 
 module.exports.checkUnique = async (req, res) => {
   const { email, username } = req.query;
-  console.log("email", email, username);
+
   if (email) {
     try {
       const user = await User.findOne({ email });
-      console.log("Email ", user, email);
+
     } catch (err) {
       console.log("Error", err);
     }
   } else if (username) {
     const user = await User.findOne({ username });
-    console.log("Username ", user);
+
   }
 };
 
@@ -304,9 +296,9 @@ module.exports.verifyToken=async(req,res)=>{
 
    let {token}=req.params
 
-  //  console.log("backend",token)
+
   if (!token) {
-    console.log("token required verify")
+  
     return res.status(403).json({
       title: "error",
  
@@ -320,7 +312,7 @@ module.exports.verifyToken=async(req,res)=>{
  
     });
   } catch (err) {
-    console.log("Invalid token")
+ 
     return res.status(403).json({
       title: "error",
       error: "token is invalid",

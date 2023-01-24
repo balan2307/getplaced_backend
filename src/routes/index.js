@@ -24,6 +24,3 @@ const InitRoutes = (app) => {
 
 module.exports=InitRoutes;
 
-// app.listen(PORT ,()=>{s
-//     console.log(`server started on PORT ${PORT}`)
-// })

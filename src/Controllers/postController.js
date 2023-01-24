@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 
 module.exports.createPost=async(req,res)=>{
 
-    console.log("create post backend",req.body,req.file)
+   
     const post=req.body;
     const id=post.id;
     delete post.id;
@@ -54,11 +54,11 @@ module.exports.createPost=async(req,res)=>{
     try
     {
         const newPost=new Post(post);
-        console.log("Before")
+    
         const saved=await newPost.save();
         if(saved)
         {
-            console.log("saved backend ",saved)
+          
             return res.status(200).json({
                 title:"Success"
               })
@@ -71,7 +71,7 @@ module.exports.createPost=async(req,res)=>{
     }
 
 
-    console.log(post);
+
 }
 
 
@@ -80,7 +80,7 @@ module.exports.getPost=async(req,res)=>{
 
     const {id}=req.params;
     const post=await Post.find({_id:id}).populate('user',{'username':1})
-    console.log("Get post backend",post)
+  
      return res.status(200).json({
         title:"Success",
         post
@@ -97,10 +97,10 @@ module.exports.editPost=async(req,res)=>{
    
     
     const updatedPost=req.body;
-    console.log("Body ",updatedPost,req.file);
+
     let post=await Post.find({_id:id})
     post=post[0]
-    // console.log("Postt",post)
+
     
     let filename=""
     let path=""
@@ -129,12 +129,12 @@ module.exports.editPost=async(req,res)=>{
     tags=tags.map(tag=>tag.toLowerCase());
     updatedPost.tags=tags;
 
-    console.log("Tags added",updatedPost,tags,newtags)
+
    
 
     if(!req.file)
     {
-        console.log("Check for deletion",updatedPost.imagedeletion)
+       
         if(updatedPost.imagedeletion)
         {
            
@@ -154,11 +154,11 @@ module.exports.editPost=async(req,res)=>{
     }
     else if(req.file)
     {
-        console.log("Delete Image",post.image)
+     
 
        if(post.image!=undefined && post.image.url!=undefined) 
        {
-        console.log("inside cloudinary")
+
         try{
             await cloudinary.uploader.destroy(post.image.filename);
         }
@@ -166,7 +166,7 @@ module.exports.editPost=async(req,res)=>{
         {
             console.log("cloudinary error",err)
         }
-        console.log(" cloudinary")
+
        }
        const {filename,path}=req.file;
        const image={url:path,filename}
@@ -199,18 +199,13 @@ module.exports.editPost=async(req,res)=>{
 module.exports.deletePost=async(req,res)=>{
    
     const {id}=req.params;
-    console.log("Delete req backend")
     let post=await Post.find({_id:id});
     post=post[0]
-    // console.log("post found",post)
-    // console.log("Image check",post.image)
     if(post.image!=undefined && post.image.url!=undefined)
     {
-        console.log("inside clooud check")
         await cloudinary.uploader.destroy(post.image.filename);
     }
     const response=await Post.findByIdAndDelete({_id:id});
-    // console.log("Respons backends")
     if(response) { 
      return res.status(200).json({
         title:"Success",
@@ -221,9 +216,8 @@ module.exports.deletePost=async(req,res)=>{
 }
 
 module.exports.getAllPosts=async(req,res)=>{
-    console.log("inside getallposts")
+
     const posts=await Post.find({}).populate('user',{'username':1});
-    // console.log("All posts backend",posts)
     return res.status(200).json({
         title:"Success",
         posts
@@ -234,7 +228,6 @@ module.exports.getAllPosts=async(req,res)=>{
 module.exports.getTaggedPostsCount=async(req,res)=>{
     let {tag}=req.params;
      tag=tag.toLowerCase();
-    console.log("get tagged post",tag);
     const posts=await Post.findByTag(tag).populate('user')
     if(posts)
     {
@@ -250,19 +243,18 @@ module.exports.getTaggedPostsCount=async(req,res)=>{
 module.exports.upvotePost=async(req,res)=>{
     let {userid,postid}=req.params;
     const post=await Post.findOne({_id:postid});
-    // userid = mongoose.mongo.ObjectId(userid);
 
 
     if(post.upvotes!=undefined && post.upvotes.indexOf(userid)!=-1)
     {
-        console.log("backend remove upvote")
+      
 
         await Post.findByIdAndUpdate(postid,{$pull:{upvotes:userid}});
 
     }
     else
     {
-        console.log("backend upvote")
+  
         await Post.findByIdAndUpdate(postid,{$push:{upvotes:userid}});
         await Post.findByIdAndUpdate(postid,{$pull:{downvotes:userid}});
 
@@ -277,14 +269,14 @@ module.exports.downvotePost=async(req,res)=>{
     const post=await Post.findOne({_id:postid});
     if(post.downvotes!=undefined && post.downvotes.indexOf(userid)!=-1)
     {
-        console.log("backend remove downvote")
+      
 
         await Post.findByIdAndUpdate(postid,{$pull:{downvotes:userid}});
 
     }
     else
     {
-        console.log("backend downpvote")
+ 
         await Post.findByIdAndUpdate(postid,{$push:{downvotes:userid}});
         await Post.findByIdAndUpdate(postid,{$pull:{upvotes:userid}});
 
@@ -294,17 +286,11 @@ module.exports.downvotePost=async(req,res)=>{
 
 module.exports.getUserPosts=async(req,res)=>{
     const {id}=req.params;
-    console.log("backend userposts post")
     const {page,limit}=req.query;
     let skip=(page-1)*limit;
     const count=await Post.find({user:id}).count();
     const pages=Math.ceil(count/limit);
     const posts=await Post.find({user:id}).populate('user').skip(skip).limit(limit);
-    if(posts)
-    {
-
-        console.log("user posts checking",posts)
-    }
     return res.status(200).json({
         title:"Success",
         posts,
@@ -315,18 +301,16 @@ module.exports.getUserPosts=async(req,res)=>{
 
 module.exports.getPostPages=async(req,res)=>{
 
-    console.log("backedn getpost")
+
     const {tag}=req.params;
     const {page,limit}=req.query;
-    //limit is page size
-    console.log("Params",tag,page,limit)
     let skip=(page-1)*limit;
 
 
     const count=await Post.findByTag(tag).count();
     const posts=await Post.findByTag(tag).populate('user').skip(skip).limit(limit);
     const pages=Math.ceil(count/limit);
-    // console.log("backend posts",posts)
+
     return res.status(200).json({
         title:"Success",
         pages,
@@ -334,20 +318,14 @@ module.exports.getPostPages=async(req,res)=>{
       })
 
 
-
-
-    // console.log(("getPostpages backend",tag,req.params,req.query))
-
     
 }
 
 
 module.exports.searchPost=async(req,res)=>{
 
-    console.log("inside searchpost")
 
     const {page,limit,search}=req.query;
-    console.log("Search request",search)
     let skip=(page-1)*limit;
 
     const count=await Post.countDocuments({ 
@@ -367,7 +345,6 @@ module.exports.searchPost=async(req,res)=>{
         ] 
     }).collation({ locale: 'en', strength: 1 }).populate('user').skip(skip).limit(limit);;
 
-    console.log("backend psots",posts)
 
     return res.status(200).json({
         title:"Success",
@@ -378,7 +355,7 @@ module.exports.searchPost=async(req,res)=>{
 
 
 
-    // console.log(("getPostpages backend",tag,req.params,req.query))
+
 
     
 }

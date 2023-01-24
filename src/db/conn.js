@@ -7,7 +7,6 @@ mongoose.set('strictQuery', true);
 
 const mongoDB_init=()=>{
     const db=process.env.DATABASE;
-    console.log("DB",db)
     mongoose.connect(db).then(()=>console.log("Connection established"))
     .catch((err)=>console.log("Oh no Error"+err))
 
