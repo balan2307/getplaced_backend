@@ -10,10 +10,12 @@ const auth = require("../middleware/auth");
 const InitRoutes = (app) => {
 
 
-    
   app.use("/user/auth", authRouter)
   app.use("/user",auth, adminRouter)
   app.use('/',auth,postRouter)
+
+
+
   app.use('/test',testRouter)
 
   console.log("Routes Initialized Successfully")

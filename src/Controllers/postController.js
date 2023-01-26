@@ -1,6 +1,7 @@
 // const { default: axios } = require('axios');
 const {cloudinary}=require('../cloudinary');
 const Post=require('../models/Post')
+const User=require('../models/User')
 var mongoose = require('mongoose');
 
 module.exports.createPost=async(req,res)=>{
@@ -78,9 +79,28 @@ module.exports.createPost=async(req,res)=>{
 module.exports.getPost=async(req,res)=>{
 
 
+
     const {id}=req.params;
-    const post=await Post.find({_id:id}).populate('user',{'username':1})
+
+
+    let post={};
+
+    try{
+
+        post=await Post.find({_id:id}).populate('user',{'username':1})
+        if(post.length==0) throw new Error();
+    
+
+    }
+    catch(err)
+    {
+        return res.status(404).json({
+            title:"Page not found"
+          })
+    }
+
   
+
      return res.status(200).json({
         title:"Success",
         post
@@ -99,6 +119,15 @@ module.exports.editPost=async(req,res)=>{
     const updatedPost=req.body;
 
     let post=await Post.find({_id:id})
+    if(post.user!=res.locals.user)
+    {
+        console.log("backend unauth access")
+        return res.status(401).json({
+            title:"Unauthorized access",
+          
+          })
+
+    }
     post=post[0]
 
     
@@ -288,14 +317,43 @@ module.exports.getUserPosts=async(req,res)=>{
     const {id}=req.params;
     const {page,limit}=req.query;
     let skip=(page-1)*limit;
+    
+
+   let posts=[]
+   try{
+
     const count=await Post.find({user:id}).count();
     const pages=Math.ceil(count/limit);
-    const posts=await Post.find({user:id}).populate('user').skip(skip).limit(limit);
+ 
+   
+
+   posts=await Post.find({user:id}).populate('user').skip(skip).limit(limit);
+
+   const user=await User.findById(id)
+
+   if(posts.length==0 && !user) throw new Error();
+
+   else if(posts.length==0 ) {
+    console.log("throw err")
+    return res.status(204).json({
+    title:"No posts" })
+   }
+    
     return res.status(200).json({
         title:"Success",
         posts,
         pages
       })
+    }
+    catch(err)
+    {
+        console.log("inside")
+        return res.status(404).json({
+            title:"Not found",
+          
+          })
+        
+    }
 }
 
 
@@ -325,7 +383,8 @@ module.exports.getPostPages=async(req,res)=>{
 module.exports.searchPost=async(req,res)=>{
 
 
-    const {page,limit,search}=req.query;
+     const {page,limit,search}=req.query;
+    console.log("searched for",search)
     let skip=(page-1)*limit;
 
     const count=await Post.countDocuments({ 

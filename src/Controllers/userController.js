@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { cloudinary } = require("../cloudinary");
+var mongoose = require('mongoose');
 // const User = require("../models/User");
 
 module.exports.loginUser = async (req, res) => {
@@ -119,9 +120,20 @@ module.exports.getUserName = async (req, res) => {
 
 module.exports.updateProfile = async (req, res) => {
   const { id } = req.params;
+  console.log("inside updateprof")
   let filename = "";
   let path = "";
   let profileImage = "";
+
+  if(id!=res.locals.user)
+  {
+      console.log("backend unauth access")
+      return res.status(401).json({
+          title:"Unauthorized access",
+        
+        })
+
+  }
 
 
 
@@ -251,7 +263,28 @@ module.exports.getUserProfile = async (req, res) => {
   
 
   const { id } = req.params;
-  const profile = await User.findOne({ _id: id });
+  let profile ={}
+  try{
+
+
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+      throw new Error();
+     }
+    profile =await User.findOne({ _id: id });
+    if(profile.length==0) throw new Error();
+    
+
+  }
+  catch(err)
+  {
+
+    return res.status(404).json({
+      title:"Page not found"
+    })
+
+  }
+
+
 
   return res.status(200).json({
     title: "Success",
