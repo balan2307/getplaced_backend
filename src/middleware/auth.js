@@ -4,7 +4,7 @@ const verifyToken = (req, res, next) => {
 
 
 
-
+  console.log("request",req.url)
   let token =''
 
   if(req.headers.authorization!=undefined) token = req.headers.authorization.split(' ')[1];

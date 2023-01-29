@@ -118,17 +118,20 @@ module.exports.editPost=async(req,res)=>{
     
     const updatedPost=req.body;
 
-    let post=await Post.find({_id:id})
-    if(post.user!=res.locals.user)
+    let post=await Post.find({_id:id}).populate('user')
+    post=post[0]
+    if(post.user._id!=res.locals.user)
     {
-        console.log("backend unauth access")
+        console.log("post",post)
+        console.log("edit",post.user._id,res.locals.user)
+       
         return res.status(401).json({
             title:"Unauthorized access",
           
           })
 
     }
-    post=post[0]
+
 
     
     let filename=""
@@ -203,8 +206,8 @@ module.exports.editPost=async(req,res)=>{
 
     }
 
-    try
-    {
+    try{
+   
        const edited= await Post.findByIdAndUpdate(id,updatedPost)
        if(edited) {
         return res.status(200).json({
@@ -214,9 +217,9 @@ module.exports.editPost=async(req,res)=>{
     }
     catch(err)
     {
-        console.log("Error ",err)
-
+        console.llog("errror edit",err)
     }
+
     
   
 

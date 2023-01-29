@@ -120,11 +120,10 @@ module.exports.getUserName = async (req, res) => {
 
 module.exports.updateProfile = async (req, res) => {
   const { id } = req.params;
-  console.log("inside updateprof")
   let filename = "";
   let path = "";
   let profileImage = "";
-
+  console.log("prof upd",req.body)
   if(id!=res.locals.user)
   {
       console.log("backend unauth access")
@@ -205,7 +204,15 @@ module.exports.updateProfile = async (req, res) => {
   
     if(imagedeletion=="true"){
 
+      try
+      {
+    
      if(getUser.profileImage.filename) await cloudinary.uploader.destroy(getUser.profileImage.filename);
+      }
+      catch(err)
+      {
+        console.log("cloudin err",err)
+      }
     }
     try{
    
