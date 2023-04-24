@@ -62,7 +62,7 @@ module.exports.RegisterUser = async (req, res) => {
   let date = new Date().toLocaleString();
   // let time=Date.now();
 
-  let month = months[parseInt(date.split(" ")[0].split("/")[1]) - 1];
+  let month = months[parseInt(date.split(" ")[0].split("/")[0]) - 1];
   let year = date.split(" ")[0].split("/")[2].split(",")[0];
   let joined = month + " " + year;
   const { email, username, password } = req.body;
